@@ -13,7 +13,7 @@ app.get("/tournaments", async (_, res) => {
     try {
         const tournaments = await db.getTournaments()
         res.status(200).send(tournaments)
-    } catch (e) {
+    } catch(e) {
         console.error(e)
         res.sendStatus(500)
     }
@@ -25,8 +25,9 @@ app.get("/tournaments/:id",
         try {
             const {id} = req.params
             const tournament = await db.getTournamentById(new ObjectId(id))
-            tournament === null ? res.sendStatus(404) : res.status(200).send(players)
-        } catch {
+            tournament === null ? res.sendStatus(404) : res.status(200).send(tournament)
+        } catch(e) {
+            console.error(e);
             res.sendStatus(500)
         }
     }
@@ -39,7 +40,8 @@ app.get("/tournaments/:id/players",
             const {id} = req.params
             const players = await db.getTournamentPlayers(new ObjectId(id))
             players === null ? res.sendStatus(404) : res.status(200).send(players)
-        } catch {
+        } catch(e) {
+            console.error(e);
             res.sendStatus(500)
         }
     }
@@ -53,7 +55,8 @@ app.get("/tournaments/:id/pairings/:roundNumber",
             const {id, roundNumber} = req.params
             const pairings = await db.getTournamentPairingsByRound(new ObjectId(id), parseInt(roundNumber))
             pairings === null ? res.sendStatus(404) : res.status(200).send(pairings)
-        } catch {
+        } catch(e) {
+            console.error(e);
             res.sendStatus(500)
         }
     }
@@ -67,7 +70,8 @@ app.get("/tournaments/:id/standings/:roundNumber",
             const {id, roundNumber} = req.params
             const standings = await db.getTournamentStandingsByRound(new ObjectId(id), parseInt(roundNumber))
             standings === null ? res.sendStatus(404) : res.status(200).send(standings)
-        } catch {
+        } catch(e) {
+            console.error(e);
             res.sendStatus(500)
         }
     }

@@ -5,7 +5,7 @@ export const client = new MongoClient(process.env.CONNECTION_STRING)
 export const db = client.db("chessehc")
 
 export async function getTournaments() {
-    const tournaments = db.collection("tournaments").find()
+    const tournaments = await db.collection("tournaments").find().toArray()
     return tournaments
 }
 
@@ -21,7 +21,7 @@ export async function getTournamentPlayers(tournamentId) {
 
 export async function getTournamentPairingsByRound(tournamentId, roundNumber) {
     const {games, byes} = await db.collection("tournaments").findOne({_id: tournamentId}, {games: 1, byes: 1})
-    return {games, byes}
+    return {games: games.filter(g => g.roundNumber === roundNumber), byes: byes.filter(b => b.roundNumber === roundNumber)}
 }
 
 export async function getTournamentStandingsByRound(tournamentId, roundNumber) {
