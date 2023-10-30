@@ -15,16 +15,16 @@ export async function getTournamentById(id) {
 }
 
 export async function getTournamentPlayers(tournamentId) {
-    const players = await db.collection("players").findOne({tournament_id: tournamentId})
+    const {players} = await db.collection("tournaments").findOne({_id: tournamentId}, {players: 1})
     return players
 }
 
 export async function getTournamentPairingsByRound(tournamentId, roundNumber) {
-    const pairings = await db.collection("pairings").findOne({tournament_id: tournamentId, round_number: roundNumber})
-    return pairings
+    const {games, byes} = await db.collection("tournaments").findOne({_id: tournamentId}, {games: 1, byes: 1})
+    return {games, byes}
 }
 
 export async function getTournamentStandingsByRound(tournamentId, roundNumber) {
-    const standings = await db.collection("standings").findOne({tournament_id: tournamentId, round_number: roundNumber})
-    return standings
+    const {standings} = await db.collection("tournaments").findOne({_id: tournamentId}, {standings: 1})
+    return standings.filter(s => s.roundNumber === roundNumber)
 }

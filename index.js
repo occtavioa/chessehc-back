@@ -10,8 +10,13 @@ const port = 5000
 app.use(cors())
 
 app.get("/tournaments", async (_, res) => {
-    const tournaments = await db.getTournaments()
-    res.status(200).send(tournaments)
+    try {
+        const tournaments = await db.getTournaments()
+        res.status(200).send(tournaments)
+    } catch (e) {
+        console.error(e)
+        res.sendStatus(500)
+    }
 })
 
 app.get("/tournaments/:id",
