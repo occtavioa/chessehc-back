@@ -1,8 +1,6 @@
-import { ObjectId } from "mongodb"
-
 export function validateTournamentId(req, res, next) {
     const {id} = req.params
-    ObjectId.isValid(id) ? next() : res.sendStatus(400)
+    Number.isInteger(parseInt(id)) ? next() : res.sendStatus(400)
 }
 
 export function validateRoundNumber(req, res, next) {

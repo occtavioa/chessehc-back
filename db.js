@@ -1,30 +1,62 @@
 import "dotenv/config"
-import { MongoClient } from "mongodb"
+import mssql from "mssql"
 
-export const client = new MongoClient(process.env.CONNECTION_STRING)
-export const db = client.db("chessehc")
+const sqlConfig = {
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    server: process.env.DB_SERVER,
+    options: {
+        trustServerCertificate: true
+    }
+}
+const pool = await mssql.connect(sqlConfig).catch(e => {console.error(e);})
 
 export async function getTournaments() {
-    const tournaments = await db.collection("tournaments").find().toArray()
-    return tournaments
+    const request = new mssql.Request(pool)
+    const result = await request.execute("GetTournaments")
+    return result.recordset
 }
 
 export async function getTournamentById(id) {
-    const tournament = await db.collection("tournaments").findOne({_id: id})
-    return tournament
+    const request = new mssql.Request(pool)
+    request.input("Id", mssql.Int, id)
+    const result = await request.execute("GetTournamentById")
+    return result.recordset
 }
 
 export async function getTournamentPlayers(tournamentId) {
-    const {players} = await db.collection("tournaments").findOne({_id: tournamentId}, {players: 1})
-    return players
+    const request = new mssql.Request(pool)
+    request.input("TournamentId", mssql.Int, tournamentId)
+    const result = await request.execute("GetTournamentPlayers")
+    return result.recordset
 }
 
 export async function getTournamentPairingsByRound(tournamentId, roundNumber) {
-    const {games, byes} = await db.collection("tournaments").findOne({_id: tournamentId}, {games: 1, byes: 1})
-    return {games: games.filter(g => g.roundNumber === roundNumber), byes: byes.filter(b => b.roundNumber === roundNumber)}
+    const gamesResquest = new mssql.Request(pool)
+    gamesResquest.arrayRowMode = true
+    gamesResquest.input("TournamentId", mssql.Int, tournamentId)
+    gamesResquest.input("RoundNumber", mssql.Int, roundNumber)
+    const byesRequest = new mssql.Request(pool)
+    byesRequest.arrayRowMode = true
+    byesRequest.input("TournamentId", mssql.Int, tournamentId)
+    byesRequest.input("RoundNumber", mssql.Int, roundNumber)
+    const gamesResult = await gamesResquest.execute("GetTournamentGamesByRound")
+    const byesResult = await byesRequest.execute("GetTournamentByesByRound")
+    return {games: gamesResult.recordset, byes: byesResult.recordset}
 }
 
 export async function getTournamentStandingsByRound(tournamentId, roundNumber) {
-    const {standings} = await db.collection("tournaments").findOne({_id: tournamentId}, {standings: 1})
-    return standings.filter(s => s.roundNumber === roundNumber)
+    const request = new mssql.Request(pool)
+    request.input("TournamentId", mssql.Int, tournamentId)
+    request.input("RoundNumber", mssql.Int, roundNumber)
+    const result = await request.execute("GetTournamentStandingsByRound")
+    return result.recordset
+}
+
+export async function test() {
+    const request = new mssql.Request(pool)
+    request.arrayRowMode = true
+    const result = request.execute("GetTournaments")
+    return result
 }
