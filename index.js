@@ -37,8 +37,8 @@ app.get("/tournaments/:id",
     async (req, res) => {
         try {
             const {id} = req.params
-            const tournament = (await db.getTournamentById(parseInt(id))).at(0)
-            typeof tournament === undefined ? res.sendStatus(404) : res.status(200).send({
+            const tournament = await db.getTournamentById(parseInt(id))
+            typeof tournament === "undefined" ? res.sendStatus(404) : res.status(200).send({
                 id: tournament.Id,
                 name: tournament.Name,
                 numberOfRounds: tournament.NumberOfRounds,

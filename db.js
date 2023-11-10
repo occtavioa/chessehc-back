@@ -22,7 +22,7 @@ export async function getTournamentById(id) {
     const request = new mssql.Request(pool)
     request.input("Id", mssql.Int, id)
     const result = await request.execute("GetTournamentById")
-    return result.recordset
+    return result.recordset.at(0)
 }
 
 export async function getTournamentPlayers(tournamentId) {
