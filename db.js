@@ -60,13 +60,15 @@ export async function insertTournament(tournament) {
     request.input("NumberOfRounds", mssql.Int, tournament.numberOfRounds)
     request.input("CurrentRound", mssql.Int, tournament.currentRound)
     const result = await request.execute("InsertTournament")
-    console.log(result);
     return result.recordset.at(0)
 }
 
-export async function test() {
+export async function insertPlayer(tournamentId, player) {
     const request = new mssql.Request(pool)
-    request.arrayRowMode = true
-    const result = await request.execute("GetTournaments")
-    return result
+    request.input("TournamentId", mssql.Int, tournamentId)
+    request.input("Name", mssql.VarChar(50), player.name)
+    request.input("Rating", mssql.Int, player.rating)
+    request.input("Title", mssql.VarChar(50), player.title)
+    const result = await request.execute("InsertPlayer")
+    return result.recordset.at(0)
 }

@@ -10,18 +10,6 @@ const port = 5000
 app.use(cors())
 app.use(bodyParser.json())
 
-app.get("/test", async(req, res) => {
-    try {
-        const body = req.body
-        const id = await db.insertTournament(body)
-        console.log(id);
-        Number.isInteger(id) ? res.status(200).send(id) : res.sendStatus(500)
-    } catch(e) {
-        console.error(e);
-        res.sendStatus(500)
-    }
-})
-
 app.get("/tournaments", async (_, res) => {
     try {
         const tournaments = await db.getTournaments()
@@ -55,8 +43,7 @@ app.post("/tournaments", async (req, res) => {
     try {
         const body = req.body
         const {Id: id} = await db.insertTournament(body)
-        console.log(id);
-        Number.isInteger(id) ? res.status(200).send({id: id}) : res.sendStatus(500)
+        res.status(200).send({id: id})
     } catch(e) {
         console.error(e);
         res.sendStatus(500)
@@ -69,7 +56,7 @@ app.get("/tournaments/:id/players",
         try {
             const {id} = req.params
             const players = await db.getTournamentPlayers(parseInt(id))
-            players === null ? res.sendStatus(404) : res.status(200).send(players.map(p => ({
+            res.status(200).send(players.map(p => ({
                 id: p.Id,
                 name: p.Name,
                 rating: p.Rating,
@@ -77,6 +64,21 @@ app.get("/tournaments/:id/players",
                 points: p.Points
             })))
         } catch(e) {
+            console.error(e);
+            res.sendStatus(500)
+        }
+    }
+)
+
+app.post("/tournaments/:id/players",
+    middleware.validateTournamentId,
+    async (req, res) => {
+        try {
+            const {id: tournamentId} = req.params
+            const player = req.body
+            const {Id: id} = await db.insertPlayer(parseInt(tournamentId), player)
+            res.status(200).send({id: id})
+        } catch (e) {
             console.error(e);
             res.sendStatus(500)
         }
