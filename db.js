@@ -54,9 +54,19 @@ export async function getTournamentStandingsByRound(tournamentId, roundNumber) {
     return result.recordset
 }
 
+export async function insertTournament(tournament) {
+    const request = new mssql.Request(pool)
+    request.input("Name", mssql.VarChar(50), tournament.name)
+    request.input("NumberOfRounds", mssql.Int, tournament.numberOfRounds)
+    request.input("CurrentRound", mssql.Int, tournament.currentRound)
+    const result = await request.execute("InsertTournament")
+    console.log(result);
+    return result.recordset.at(0)
+}
+
 export async function test() {
     const request = new mssql.Request(pool)
     request.arrayRowMode = true
-    const result = request.execute("GetTournaments")
+    const result = await request.execute("GetTournaments")
     return result
 }

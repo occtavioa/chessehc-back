@@ -2,18 +2,20 @@ import e from "express";
 import cors from "cors"
 import * as db from "./db.js"
 import * as middleware from "./middleware.js"
+import bodyParser from "body-parser";
 
 const app = e()
 const port = 5000
 
 app.use(cors())
+app.use(bodyParser.json())
 
-app.get("/test", async(_, res) => {
+app.get("/test", async(req, res) => {
     try {
-        const result = await db.test()
-        console.log("result: ", result);
-        console.log("recordsets: ", result.recordsets);
-        res.status(200).send(result)
+        const body = req.body
+        const id = await db.insertTournament(body)
+        console.log(id);
+        Number.isInteger(id) ? res.status(200).send(id) : res.sendStatus(500)
     } catch(e) {
         console.error(e);
         res.sendStatus(500)
@@ -36,7 +38,7 @@ app.get("/tournaments/:id",
         try {
             const {id} = req.params
             const tournament = (await db.getTournamentById(parseInt(id))).at(0)
-            tournament === undefined ? res.sendStatus(404) : res.status(200).send({
+            typeof tournament === undefined ? res.sendStatus(404) : res.status(200).send({
                 id: tournament.Id,
                 name: tournament.Name,
                 numberOfRounds: tournament.NumberOfRounds,
@@ -48,6 +50,18 @@ app.get("/tournaments/:id",
         }
     }
 )
+
+app.post("/tournaments", async (req, res) => {
+    try {
+        const body = req.body
+        const {Id: id} = await db.insertTournament(body)
+        console.log(id);
+        Number.isInteger(id) ? res.status(200).send({id: id}) : res.sendStatus(500)
+    } catch(e) {
+        console.error(e);
+        res.sendStatus(500)
+    }
+})
 
 app.get("/tournaments/:id/players",
     middleware.validateTournamentId,
