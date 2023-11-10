@@ -85,6 +85,20 @@ app.post("/tournaments/:id/players",
     }
 )
 
+app.post("/tournaments/:tournamentId/players/:playerId/points/:roundNumber",
+    async (req, res) => {
+        try {
+            const {tournamentId, playerId, roundNumber} = req.params
+            const {points} = req.body
+            await db.insertPlayerPointsByRound(parseInt(tournamentId), parseInt(playerId), parseInt(roundNumber), points)
+            res.sendStatus(200)
+        } catch (e) {
+            console.error(e);
+            res.sendStatus(500)
+        }
+    }
+)
+
 app.get("/tournaments/:id/pairings/:roundNumber",
     middleware.validateTournamentId, 
     middleware.validateRoundNumber,

@@ -72,3 +72,13 @@ export async function insertPlayer(tournamentId, player) {
     const result = await request.execute("InsertPlayer")
     return result.recordset.at(0)
 }
+
+export async function insertPlayerPointsByRound(tournamentId, playerId, roundNumber, points) {
+    const request = new mssql.Request(pool)
+    request.input("TournamentId", mssql.Int, tournamentId)
+    request.input("PlayerId", mssql.Int, playerId)
+    request.input("RoundNumber", mssql.Int, roundNumber)
+    request.input("Points", mssql.Decimal(18, 1), points)
+    const result = await request.execute("InsertPlayerPointsByRound")
+    return result
+}
