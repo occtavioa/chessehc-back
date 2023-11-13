@@ -15,9 +15,9 @@ router.get("/", async(_req, res) => {
 
 router.post("/", async (req, res) => {
     try {
-        const body = req.body
-        const {Id} = await db.insertTournament(body)
-        res.status(200).send({id: Id})
+        const tournament = req.body
+        const result = await db.insertTournament(tournament)
+        typeof result === "undefined" ? res.sendStatus(400) : res.status(200).send({id: Id})
     } catch(e) {
         console.error(e);
         res.sendStatus(500)
@@ -28,12 +28,7 @@ router.get("/:id", async (req, res) => {
     try {
         const {id} = req.params
         const tournament = await db.getTournamentById(parseInt(id))
-        typeof tournament === "undefined" ? res.sendStatus(404) : res.status(200).send({
-            id: tournament.Id,
-            name: tournament.Name,
-            numberOfRounds: tournament.NumberOfRounds,
-            currentRound: tournament.CurrentRound
-        })
+        typeof tournament === "undefined" ? res.sendStatus(404) : res.status(200).send(tournament)
     } catch(e) {
         console.error(e);
         res.sendStatus(500)
