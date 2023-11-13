@@ -17,7 +17,7 @@ router.post("/", async (req, res) => {
     try {
         const tournament = req.body
         const result = await db.insertTournament(tournament)
-        typeof result === "undefined" ? res.sendStatus(400) : res.status(200).send({id: Id})
+        typeof result === "undefined" ? res.sendStatus(400) : res.status(200).send(result)
     } catch(e) {
         console.error(e);
         res.sendStatus(500)

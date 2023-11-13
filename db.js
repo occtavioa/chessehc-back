@@ -32,9 +32,15 @@ export async function getTournamentPlayers(tournamentId) {
     return result.recordset
 }
 
+export async function getPlayerById(id) {
+    const request = new mssql.Request(pool)
+    request.input("Id", mssql.Int, id)
+    const result = await request.execute("GetPlayerById")
+    return result.recordset
+}
+
 export async function getTournamentGamesByRound(tournamentId, roundNumber) {
     const gamesResquest = new mssql.Request(pool)
-    gamesResquest.arrayRowMode = true
     gamesResquest.input("TournamentId", mssql.Int, tournamentId)
     gamesResquest.input("RoundNumber", mssql.Int, roundNumber)
     const gamesResult = await gamesResquest.execute("GetTournamentGamesByRound")
@@ -43,7 +49,6 @@ export async function getTournamentGamesByRound(tournamentId, roundNumber) {
 
 export async function getTournamentByesByRound(tournamentId, roundNumber) {
     const byesRequest = new mssql.Request(pool)
-    byesRequest.arrayRowMode = true
     byesRequest.input("TournamentId", mssql.Int, tournamentId)
     byesRequest.input("RoundNumber", mssql.Int, roundNumber)
     const byesResult = await byesRequest.execute("GetTournamentByesByRound")
@@ -83,12 +88,12 @@ export async function insertPlayer(player) {
     return result.recordset.at(0)
 }
 
-export async function insertStanding({tournamentId, playerId, roundNumber, points}) {
+export async function insertStanding(standing) {
     const request = new mssql.Request(pool)
-    request.input("TournamentId", mssql.Int, tournamentId)
-    request.input("PlayerId", mssql.Int, playerId)
-    request.input("RoundNumber", mssql.Int, roundNumber)
-    request.input("Points", mssql.Decimal(18, 1), points)
+    request.input("TournamentId", mssql.Int, standing.tournamentId)
+    request.input("PlayerId", mssql.Int, standing.playerId)
+    request.input("RoundNumber", mssql.Int, standing.roundNumber)
+    request.input("Points", mssql.Decimal(18, 1), standing.points)
     const result = await request.execute("InsertPlayerPointsByRound")
     return result
 }
