@@ -104,9 +104,9 @@ export async function insertGame(game) {
     request.input("Round", mssql.Int, game.round)
     request.input("WhiteId", mssql.Int, game.whiteId)
     request.input("BlackId", mssql.Int, game.blackId)
-    request.input("WhitePoint", mssql.Int, game.whitePoint)
-    request.input("BlackPoint", mssql.Int, game.blackPoint)
-    request.input("Ongoing", mssql.Int, game.ongoing)
+    request.input("WhitePoint", mssql.VarChar(50), game.whitePoint)
+    request.input("BlackPoint", mssql.VarChar(50), game.blackPoint)
+    request.input("Ongoing", mssql.Bit, game.ongoing)
     const result = await request.execute("InsertGame")
     return result.recordset.at(0)
 }
