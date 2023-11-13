@@ -3,6 +3,7 @@ import cors from "cors"
 import * as db from "./db.js"
 import * as middleware from "./middleware.js"
 import bodyParser from "body-parser";
+import {default as tournamentRouter} from "./routes/tournament.js";
 
 const app = e()
 const port = 5000
@@ -10,45 +11,7 @@ const port = 5000
 app.use(cors())
 app.use(bodyParser.json())
 
-app.get("/tournaments", async (_, res) => {
-    try {
-        const tournaments = await db.getTournaments()
-        res.status(200).send(tournaments)
-    } catch(e) {
-        console.error(e)
-        res.sendStatus(500)
-    }
-})
-
-app.get("/tournaments/:id",
-    middleware.validateTournamentId,
-    async (req, res) => {
-        try {
-            const {id} = req.params
-            const tournament = await db.getTournamentById(parseInt(id))
-            typeof tournament === "undefined" ? res.sendStatus(404) : res.status(200).send({
-                id: tournament.Id,
-                name: tournament.Name,
-                numberOfRounds: tournament.NumberOfRounds,
-                currentRound: tournament.CurrentRound
-            })
-        } catch(e) {
-            console.error(e);
-            res.sendStatus(500)
-        }
-    }
-)
-
-app.post("/tournaments", async (req, res) => {
-    try {
-        const body = req.body
-        const {Id: id} = await db.insertTournament(body)
-        res.status(200).send({id: id})
-    } catch(e) {
-        console.error(e);
-        res.sendStatus(500)
-    }
-})
+app.use("/tournaments", tournamentRouter)
 
 app.get("/tournaments/:id/players",
     middleware.validateTournamentId,
