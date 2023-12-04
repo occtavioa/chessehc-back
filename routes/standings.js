@@ -5,14 +5,14 @@ const router = new Router()
 
 router.get("/:tournamentId", async (req, res) => {
     const {tournamentId} = req.params
-    let {roundNumber} = req.query;
-    roundNumber = typeof roundNumber === "undefined" ? null : parseInt(roundNumber)
-    if(Number.isNaN(roundNumber)) {
+    let {round} = req.query;
+    round = typeof round === "undefined" ? null : parseInt(round)
+    if(Number.isNaN(round)) {
         res.sendStatus(400)
         return
     }
     try {
-        const standings = await db.getTournamentStandingsByRound(tournamentId, roundNumber)
+        const standings = await db.getTournamentStandingsByRound(tournamentId, round)
         standings.length === 0 ? res.sendStatus(404) : res.status(200).send(standings)
     } catch (error) {
         console.error(error);
@@ -21,8 +21,8 @@ router.get("/:tournamentId", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
+    const standing = req.body
     try {
-        const standing = req.body
         await db.insertStanding(standing)
         res.sendStatus(204)
     } catch (error) {

@@ -5,14 +5,14 @@ const router = new Router()
 
 router.get("/:tournamentId", async (req, res) => {
     const {tournamentId} = req.params
-    let {roundNumber} = req.query;
-    roundNumber = typeof roundNumber === "undefined" ? null : parseInt(roundNumber)
-    if(Number.isNaN(roundNumber)) {
+    let {round} = req.query;
+    round = typeof round === "undefined" ? null : parseInt(round)
+    if(Number.isNaN(round)) {
         res.sendStatus(400)
         return
     }
     try {
-        const byes = await db.getTournamentByesByRound(tournamentId, roundNumber)
+        const byes = await db.getTournamentByesByRound(tournamentId, round)
         byes.length === 0 ? res.sendStatus(404) : res.status(200).send(await Promise.all(byes.map(async (b) => Object.assign(b, {player: await db.getPlayerById(b.PlayerId)}))))
     } catch (error) {
         console.error(error);
@@ -21,8 +21,8 @@ router.get("/:tournamentId", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
+    const bye = req.body
     try {
-        const bye = req.body
         await db.insertBye(bye)
         res.sendStatus(204)
     } catch(error) {

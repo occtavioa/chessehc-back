@@ -11,66 +11,67 @@ const sqlConfig = {
     }
 }
 const pool = await mssql.connect(sqlConfig).catch(e => {console.error(e);})
+const newRequest = () => new mssql.Request(pool)
 
 export async function getTournaments() {
-    const request = new mssql.Request(pool)
+    const request = newRequest()
     const result = await request.execute("GetTournaments")
     return result.recordset
 }
 
 export async function getTournamentById(id) {
-    const request = new mssql.Request(pool)
+    const request = newRequest()
     request.input("Id", mssql.Int, id)
     const result = await request.execute("GetTournamentById")
     return result.recordset.at(0)
 }
 
 export async function getTournamentPlayers(tournamentId) {
-    const request = new mssql.Request(pool)
-    request.input("TournamentId", mssql.Int, tournamentId)
+    const request = newRequest()
+    request.input("Id", mssql.Int, tournamentId)
     const result = await request.execute("GetTournamentPlayers")
     return result.recordset
 }
 
 export async function getPlayerById(id) {
-    const request = new mssql.Request(pool)
+    const request = newRequest()
     request.input("Id", mssql.Int, id)
     const result = await request.execute("GetPlayerById")
     return result.recordset
 }
 
-export async function getTournamentGamesByRound(tournamentId, roundNumber) {
-    const gamesResquest = new mssql.Request(pool)
-    gamesResquest.input("TournamentId", mssql.Int, tournamentId)
-    gamesResquest.input("RoundNumber", mssql.Int, roundNumber)
+export async function getTournamentGamesByRound(tournamentId, round) {
+    const gamesResquest = newRequest()
+    gamesResquest.input("Id", mssql.Int, tournamentId)
+    gamesResquest.input("Round", mssql.Int, round)
     const gamesResult = await gamesResquest.execute("GetTournamentGamesByRound")
     return gamesResult.recordset
 }
 
-export async function getTournamentByesByRound(tournamentId, roundNumber) {
-    const byesRequest = new mssql.Request(pool)
-    byesRequest.input("TournamentId", mssql.Int, tournamentId)
-    byesRequest.input("RoundNumber", mssql.Int, roundNumber)
+export async function getTournamentByesByRound(tournamentId, round) {
+    const byesRequest = newRequest()
+    byesRequest.input("Id", mssql.Int, tournamentId)
+    byesRequest.input("Round", mssql.Int, round)
     const byesResult = await byesRequest.execute("GetTournamentByesByRound")
     return byesResult.recordset
 }
 
-export async function getTournamentPairingsByRound(tournamentId, roundNumber) {
-    const games = await getTournamentGamesByRound(tournamentId, roundNumber)
-    const byes = await getTournamentByesByRound(tournamentId, roundNumber)
+export async function getTournamentPairingsByRound(tournamentId, round) {
+    const games = await getTournamentGamesByRound(tournamentId, round)
+    const byes = await getTournamentByesByRound(tournamentId, round)
     return {games, byes}
 }
 
-export async function getTournamentStandingsByRound(tournamentId, roundNumber) {
-    const request = new mssql.Request(pool)
-    request.input("TournamentId", mssql.Int, tournamentId)
-    request.input("RoundNumber", mssql.Int, roundNumber)
+export async function getTournamentStandingsByRound(tournamentId, round) {
+    const request = newRequest()
+    request.input("Id", mssql.Int, tournamentId)
+    request.input("Round", mssql.Int, round)
     const result = await request.execute("GetTournamentStandingsByRound")
     return result.recordset
 }
 
 export async function insertTournament(tournament) {
-    const request = new mssql.Request(pool)
+    const request = newRequest()
     request.input("Name", mssql.VarChar(50), tournament.name)
     request.input("NumberOfRounds", mssql.Int, tournament.numberOfRounds)
     request.input("CurrentRound", mssql.Int, tournament.currentRound)
@@ -79,7 +80,7 @@ export async function insertTournament(tournament) {
 }
 
 export async function insertPlayer(player) {
-    const request = new mssql.Request(pool)
+    const request = newRequest()
     request.input("TournamentId", mssql.Int, player.tournamentId)
     request.input("Name", mssql.VarChar(50), player.name)
     request.input("Rating", mssql.Int, player.rating)
@@ -89,17 +90,17 @@ export async function insertPlayer(player) {
 }
 
 export async function insertStanding(standing) {
-    const request = new mssql.Request(pool)
+    const request = newRequest()
     request.input("TournamentId", mssql.Int, standing.tournamentId)
     request.input("PlayerId", mssql.Int, standing.playerId)
-    request.input("RoundNumber", mssql.Int, standing.roundNumber)
+    request.input("Round", mssql.Int, standing.roundNumber)
     request.input("Points", mssql.Decimal(18, 1), standing.points)
     const result = await request.execute("InsertPlayerPointsByRound")
     return result
 }
 
 export async function insertGame(game) {
-    const request = new mssql.Request(pool)
+    const request = newRequest()
     request.input("TournamentId", mssql.Int, game.tournamentId)
     request.input("Round", mssql.Int, game.round)
     request.input("WhiteId", mssql.Int, game.whiteId)
@@ -112,7 +113,7 @@ export async function insertGame(game) {
 }
 
 export async function insertBye(bye) {
-    const request = new mssql.Request(pool)
+    const request = newRequest()
     request.input("TournamentId", mssql.Int, bye.tournamentId)
     request.input("Round", mssql.Int, bye.round)
     request.input("PlayerId", mssql.Int, bye.playerId)

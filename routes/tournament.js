@@ -14,8 +14,8 @@ router.get("/", async(_req, res) => {
 })
 
 router.post("/", async (req, res) => {
+    const tournament = req.body
     try {
-        const tournament = req.body
         const result = await db.insertTournament(tournament)
         typeof result === "undefined" ? res.sendStatus(400) : res.status(200).send(result)
     } catch(e) {
@@ -25,8 +25,8 @@ router.post("/", async (req, res) => {
 })
 
 router.get("/:id", async (req, res) => {
+    const {id} = req.params
     try {
-        const {id} = req.params
         const tournament = await db.getTournamentById(parseInt(id))
         typeof tournament === "undefined" ? res.sendStatus(404) : res.status(200).send(tournament)
     } catch(e) {
