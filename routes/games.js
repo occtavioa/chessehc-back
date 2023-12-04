@@ -3,9 +3,15 @@ import { Router } from "express";
 
 const router = new Router()
 
-router.get("/:tournamentId/:roundNumber", async (req, res) => {
+router.get("/:tournamentId", async (req, res) => {
+    const {tournamentId} = req.params
+    let {roundNumber} = req.query;
+    roundNumber = typeof roundNumber === "undefined" ? null : parseInt(roundNumber)
+    if(Number.isNaN(roundNumber)) {
+        res.sendStatus(400)
+        return
+    }
     try {
-        const {tournamentId, roundNumber} = req.params
         const games = await db.getTournamentGamesByRound(tournamentId, roundNumber)
         games.length === 0 ? res.sendStatus(404) : res.status(200).send(await Promise.all(games.map(async (g) => Object.assign(g, {white: await db.getPlayerById(g.WhiteId), black: await db.getPlayerById(g.BlackId)}))))
     } catch (error) {
