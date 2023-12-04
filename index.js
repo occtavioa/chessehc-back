@@ -1,6 +1,5 @@
 import e from "express";
 import cors from "cors"
-import bodyParser from "body-parser";
 import {default as tournamentsRouter} from "./routes/tournament.js";
 import {default as playersRouter} from "./routes/players.js"
 import {default as gamesRouter} from "./routes/games.js"
@@ -11,7 +10,7 @@ const app = e()
 const port = 5000
 
 app.use(cors())
-app.use(bodyParser.json())
+app.use(e.json())
 
 app.use("/tournaments", tournamentsRouter)
 app.use("/players", playersRouter)
