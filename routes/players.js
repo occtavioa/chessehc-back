@@ -15,8 +15,8 @@ router.get("/:tournamentId", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
+    const player = req.body
     try {
-        const player = req.body
         const result = await db.insertPlayer(player)
         typeof result === "undefined" ? res.sendStatus(400) : res.status(201).send(result)
     } catch (e) {
