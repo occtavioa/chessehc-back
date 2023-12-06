@@ -28,7 +28,7 @@ export async function getTournamentById(id) {
 
 export async function getTournamentPlayers(tournamentId) {
     const request = newRequest()
-    request.input("Id", mssql.Int, tournamentId)
+    request.input("TournamentId", mssql.Int, tournamentId)
     const result = await request.execute("GetTournamentPlayers")
     return result.recordset
 }
@@ -42,7 +42,7 @@ export async function getPlayerById(id) {
 
 export async function getTournamentGamesByRound(tournamentId, round) {
     const gamesResquest = newRequest()
-    gamesResquest.input("Id", mssql.Int, tournamentId)
+    gamesResquest.input("TournamentId", mssql.Int, tournamentId)
     gamesResquest.input("Round", mssql.Int, round)
     const gamesResult = await gamesResquest.execute("GetTournamentGamesByRound")
     return gamesResult.recordset
@@ -50,7 +50,7 @@ export async function getTournamentGamesByRound(tournamentId, round) {
 
 export async function getTournamentByesByRound(tournamentId, round) {
     const byesRequest = newRequest()
-    byesRequest.input("Id", mssql.Int, tournamentId)
+    byesRequest.input("TournamentId", mssql.Int, tournamentId)
     byesRequest.input("Round", mssql.Int, round)
     const byesResult = await byesRequest.execute("GetTournamentByesByRound")
     return byesResult.recordset
@@ -64,7 +64,7 @@ export async function getTournamentPairingsByRound(tournamentId, round) {
 
 export async function getTournamentStandingsByRound(tournamentId, round) {
     const request = newRequest()
-    request.input("Id", mssql.Int, tournamentId)
+    request.input("TournamentId", mssql.Int, tournamentId)
     request.input("Round", mssql.Int, round)
     const result = await request.execute("GetTournamentStandingsByRound")
     return result.recordset
@@ -119,5 +119,14 @@ export async function insertBye(bye) {
     request.input("PlayerId", mssql.Int, bye.playerId)
     request.input("ByePoint", mssql.Int, bye.byePoint)
     const result = await request.execute("InsertBye")
+    return result
+}
+
+export async function updateGameResult(id, whitePoint, blackPoint) {
+    const request = newRequest()
+    request.input("Id", mssql.Int, id)
+    request.input("WhitePoint", mssql.VarChar(50), whitePoint)
+    request.input("BlackPoint", mssql.VarChar(50), blackPoint)
+    const result = await request.execute("UpdateGameResult")
     return result
 }
