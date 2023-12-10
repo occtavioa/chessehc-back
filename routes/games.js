@@ -31,4 +31,20 @@ router.post("/", async (req, res) => {
     }
 })
 
+router.put("/:id", async (req, res) => {
+    const {id} = req.params
+    const {whitePoint, blackPoint} = req.body
+    if(typeof whitePoint === "undefined" || typeof blackPoint === "undefined") {
+        res.sendStatus(400)
+        return
+    }
+    try {
+        await db.updateGameResult(id, whitePoint, blackPoint)
+        res.sendStatus(204)
+    } catch (error) {
+        console.error(error);
+        res.sendStatus(500)
+    }
+})
+
 export default router

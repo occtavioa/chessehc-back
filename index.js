@@ -12,6 +12,10 @@ const port = 5000
 app.use(cors())
 app.use(e.json())
 
+app.get("/ping", (_req, res) => {
+    res.status(200).send({message: "pong"})
+})
+
 app.use("/tournaments", tournamentsRouter)
 app.use("/players", playersRouter)
 app.use("/games", gamesRouter)

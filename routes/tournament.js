@@ -35,4 +35,20 @@ router.get("/:id", async (req, res) => {
     }
 })
 
+router.put("/:id/round", async (req, res) => {
+    const {id} = req.params
+    const {round} = req.body
+    if(typeof round === "undefined") {
+        res.sendStatus(400)
+        return
+    }
+    try {
+        await db.updateTournamentRound(parseInt(id), round)
+        res.sendStatus(204)
+    } catch (error) {
+        console.error(error)
+        res.sendStatus(500)
+    }
+})
+
 export default router

@@ -37,7 +37,7 @@ export async function getPlayerById(id) {
     const request = newRequest()
     request.input("Id", mssql.Int, id)
     const result = await request.execute("GetPlayerById")
-    return result.recordset
+    return result.recordset.at(0)
 }
 
 export async function getTournamentGamesByRound(tournamentId, round) {
@@ -93,7 +93,7 @@ export async function insertStanding(standing) {
     const request = newRequest()
     request.input("TournamentId", mssql.Int, standing.tournamentId)
     request.input("PlayerId", mssql.Int, standing.playerId)
-    request.input("Round", mssql.Int, standing.roundNumber)
+    request.input("Round", mssql.Int, standing.round)
     request.input("Points", mssql.Decimal(18, 1), standing.points)
     const result = await request.execute("InsertPlayerPointsByRound")
     return result
@@ -117,7 +117,7 @@ export async function insertBye(bye) {
     request.input("TournamentId", mssql.Int, bye.tournamentId)
     request.input("Round", mssql.Int, bye.round)
     request.input("PlayerId", mssql.Int, bye.playerId)
-    request.input("ByePoint", mssql.Int, bye.byePoint)
+    request.input("ByePoint", mssql.VarChar(50), bye.byePoint)
     const result = await request.execute("InsertBye")
     return result
 }
@@ -128,5 +128,23 @@ export async function updateGameResult(id, whitePoint, blackPoint) {
     request.input("WhitePoint", mssql.VarChar(50), whitePoint)
     request.input("BlackPoint", mssql.VarChar(50), blackPoint)
     const result = await request.execute("UpdateGameResult")
+    return result
+}
+
+export async function updateTournamentRound(id, round) {
+    const request = newRequest()
+    request.input("Id", mssql.Int, id)
+    request.input("Round", mssql.Int, round)
+    const result = await request.execute("UpdateTournamentRound")
+    return result
+}
+
+export async function updateStanding(tournamentId, playerId, round, points) {
+    const request = newRequest()
+    request.input("TournamentId", mssql.Int , tournamentId)
+    request.input("PlayerId", mssql.Int, playerId)
+    request.input("Round", mssql.Int, round)
+    request.input("Points", mssql.Decimal(18, 1), points)
+    const result = await request.execute("UpdatePlayerPointsByRound")
     return result
 }
